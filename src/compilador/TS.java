@@ -11,23 +11,66 @@ public class TS {
 
       // Inserindo as palavras reservadas
       Token word;
-      word = new Token(Tag.KW, "public", 0, 0);
+      word = new Token(Tag.KW, "algoritmo", 0, 0);
       this.tabelaSimbolos.put(word, new InfIdentificador());
         
-      word = new Token(Tag.KW, "class", 0, 0);
+      word = new Token(Tag.KW, "declare", 0, 0);
       this.tabelaSimbolos.put(word, new InfIdentificador());
        
-      word = new Token(Tag.KW, "SystemOutDispln", 0, 0);
+      word = new Token(Tag.KW, "fim", 0, 0);
       this.tabelaSimbolos.put(word, new InfIdentificador());
         
-      word = new Token(Tag.KW, "end", 0, 0);
+      word = new Token(Tag.KW, "subrotina", 0, 0);
       this.tabelaSimbolos.put(word, new InfIdentificador());
         
-      word = new Token(Tag.KW, "integer", 0, 0);
+      word = new Token(Tag.KW, "retorne", 0, 0);
       this.tabelaSimbolos.put(word, new InfIdentificador());
         
-      word = new Token(Tag.KW, "string", 0, 0);
+      word = new Token(Tag.KW, "logico", 0, 0);
       this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "numerico", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "literal", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "nulo", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "se", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "inicio", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "senao", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "enquanto", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "faca", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "para", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "ate", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "repita", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "leia", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "verdadeiro", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
+      word = new Token(Tag.KW, "falso", 0, 0);
+      this.tabelaSimbolos.put(word, new InfIdentificador());
+      
    }
     
 	public void put(Token w, InfIdentificador i) {
