@@ -1,4 +1,4 @@
-package compilador;
+package lexer;
 
 public enum Tag {
     
@@ -22,6 +22,8 @@ public enum Tag {
     SMB_OP,
     SMB_CP,
     SMB_SEMICOLON,
+    SMB_COMMA,
+    SMB_COLON,
     
     //identificador
     ID,
@@ -30,7 +32,7 @@ public enum Tag {
     NUMERICO,
     
     //strings
-    STRING,
+    LITERAL,
     
     // palavra reservada
     KW;

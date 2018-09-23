@@ -1,4 +1,4 @@
-package compilador;
+package lexer;
 
 public class Token {
     
