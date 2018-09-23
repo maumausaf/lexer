@@ -119,8 +119,8 @@ public class LexerAluno {
 
                     } else if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {//ok
                         if (c == '\t') {
-                            n_column = +4;
-                        } else if (c == '\n' || c == '\r') {
+                            n_column = +3;
+                        } else if (c == '\n') {
                             n_line++;
                             n_column = 1;
                         }
@@ -153,14 +153,13 @@ public class LexerAluno {
                     }//Estado q32
                     else if (c == '*') {
                         return new Token(Tag.RELOP_MULT, "*", n_line, n_column);//ok
-                    }
-                    else if (c == '<') {//ok
+                    } else if (c == '<') {//ok
                         lexema.append(c);
                         estado = 8;
                     } else if (c == '>') {//ok
                         lexema.append(c);
                         estado = 17;
-                    }  else if (c == '/') {
+                    } else if (c == '/') {
                         lexema.append(c);
                         estado = 4;
                     } else if (Character.isLetter(c)) {
@@ -168,13 +167,10 @@ public class LexerAluno {
                         estado = 6; // ok
                     } else if (Character.isDigit(c)) {
                         lexema.append(c); // comecamos a construir um numero
-                        estado = 18; // vamos para o estado 18
-                    } else if (c == '!') {
-                        lexema.append(c);
-                        estado = 14;
+                        estado = 20; // vamos para o estado 18
                     } else if (c == '"') {
                         lexema.append(c);
-                        estado = 23;
+                        estado = 14;
                     } else {
                         retornaPonteiro();
                         sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
@@ -182,6 +178,7 @@ public class LexerAluno {
                         return null;
                     }
                     break;
+
                 case 1:
                     switch (c) {
                         case '/':
@@ -197,14 +194,7 @@ public class LexerAluno {
                             return new Token(Tag.RELOP_DIV, "/", n_line, n_column);
                     }
                     break;
-                case 4:
-                    if (c == '\n' || c == '\r' || lookahead == END_OF_FILE) {
-                        lexema.delete(0, lexema.length());
-                        estado = 0;
-                    } else {
-                        lexema.append(c);
-                    }
-                    break;
+
                 case 3:
                     if (c == '*') {
                         lexema.append(c);
@@ -217,6 +207,16 @@ public class LexerAluno {
                         lexema.append(c);
                     }
                     break;
+
+                case 4:
+                    if (c == '\n' || c == '\r' || lookahead == END_OF_FILE) {
+                        lexema.delete(0, lexema.length());
+                        estado = 0;
+                    } else {
+                        lexema.append(c);
+                    }
+                    break;
+
                 case 5:
                     if (c == '/') {
                         lexema.delete(0, lexema.length());
@@ -230,15 +230,20 @@ public class LexerAluno {
                         estado = 3;
                     }
                     break;
-                case 13:
-                    if (c == '-') {
-                        return new Token(Tag.RELOP_ASSIGN, "<--", n_line, n_column);
+
+                case 6:
+                    if (Character.isLetterOrDigit(c)) {
+                        lexema.append(c);
                     } else {
                         retornaPonteiro();
-                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
-                                + " e coluna " + n_column + "\n quanto era esperado (-).");
-                        return null;
+                        if (tabelaSimbolos.retornaToken(lexema.toString()) == null) {
+                            return new Token(Tag.ID, lexema.toString(), n_line, n_column);
+                        } else {
+                            return tabelaSimbolos.retornaToken(lexema.toString());
+                        }
                     }
+                    break;
+
                 case 8:
                     if (c == '=') {
                         return new Token(Tag.RELOP_LE, "<=", n_line, n_column);
@@ -252,70 +257,18 @@ public class LexerAluno {
                         retornaPonteiro();
                         return new Token(Tag.RELOP_LT, "<", n_line, n_column);
                     }
-                case 17:
-                    if (c == '=') {
-                        return new Token(Tag.RELOP_GE, ">=", n_line, n_column);
+
+                case 13:
+                    if (c == '-') {
+                        return new Token(Tag.RELOP_ASSIGN, "<--", n_line, n_column);
                     } else {
                         retornaPonteiro();
-                        return new Token(Tag.RELOP_GT, ">", n_line, n_column);
+                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
+                                + " e coluna " + n_column + "\n quanto era esperado (-).");
+                        return null;
                     }
+
                 case 14:
-                    if (c == '=') {
-                        return new Token(Tag.RELOP_NE, "!=", n_line, n_column);
-                    } else {
-                        retornaPonteiro();
-                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
-                                + " e coluna " + n_column);
-                        return null;
-                    }
-                case 6:
-                    if (Character.isLetterOrDigit(c)) {
-                        lexema.append(c);
-                    } else {
-                        retornaPonteiro();
-                        if (tabelaSimbolos.retornaToken(lexema.toString()) == null) {
-                            return new Token(Tag.ID, lexema.toString(), n_line, n_column);
-                        } else {
-                            return tabelaSimbolos.retornaToken(lexema.toString());
-                        }
-                    }
-                    break;
-                case 18:
-                    if (Character.isDigit(c)) {
-                        lexema.append(c);
-                    } else if (c == '.') {
-                        lexema.append(c);
-                        estado = 20;
-                    } else {
-                        retornaPonteiro();
-                        return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
-                    }
-                    break;
-                case 20:
-                    if (Character.isDigit(c)) {
-                        estado = 21; // movimento para o estado 21
-                    } else {
-                        retornaPonteiro();
-                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
-                                + " e coluna " + n_column);
-                        return null;
-                    }
-                    break;
-                case 21:
-                    if (Character.isDigit(c)) {
-                        lexema.append(c);
-                    } else if (c == ',') {
-                        estado = 22;
-                    } else {
-                        return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
-                    }
-                case 22:
-                    if (Character.isDigit(c)) {
-                        lexema.append(c);
-                    } else {
-                        return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
-                    }
-                case 23:
                     if (c == '"') {
                         return new Token(Tag.LITERAL, lexema.toString(), n_line, n_column);
                     } else if (c == '\n' || c == '\r') {
@@ -331,6 +284,46 @@ public class LexerAluno {
                         lexema.append(c);
                     }
                     break;
+
+                case 17:
+                    if (c == '=') {
+                        return new Token(Tag.RELOP_GE, ">=", n_line, n_column);
+                    } else {
+                        retornaPonteiro();
+                        return new Token(Tag.RELOP_GT, ">", n_line, n_column);
+                    }
+
+                case 20:
+                    if (Character.isDigit(c)) {
+                        lexema.append(c);
+                    } else if (c == '.') {
+                        lexema.append(c);
+                        estado = 21;
+                    } else {
+                        retornaPonteiro();
+                        return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
+                    }
+                    break;
+
+                case 21:
+                    if (Character.isDigit(c)) {
+                        lexema.append(c);
+                        estado = 23; // movimento para o estado 21
+                    } else {
+                        retornaPonteiro();
+                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
+                                + " e coluna " + n_column);
+                        return null;
+                    }
+                    break;
+
+                case 23:
+                    if (Character.isDigit(c)) {
+                        lexema.append(c);
+
+                    } else {
+                        return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
+                    }
 
             } // fim switch
         } // fim while
