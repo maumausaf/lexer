@@ -156,16 +156,16 @@ public class LexerAluno {
                     }
                     else if (c == '<') {//ok
                         lexema.append(c);
-                        estado = 5;
+                        estado = 8;
                     } else if (c == '>') {//ok
                         lexema.append(c);
-                        estado = 8;
+                        estado = 17;
                     }  else if (c == '/') {
                         lexema.append(c);
                         estado = 4;
                     } else if (Character.isLetter(c)) {
                         lexema.append(c);
-                        estado = 16; // ok
+                        estado = 6; // ok
                     } else if (Character.isDigit(c)) {
                         lexema.append(c); // comecamos a construir um numero
                         estado = 18; // vamos para o estado 18
@@ -182,43 +182,77 @@ public class LexerAluno {
                         return null;
                     }
                     break;
-                case 4:
+                case 1:
                     switch (c) {
                         case '/':
                             lexema.append(c);
-                            estado = 28;
+                            estado = 4;
                             break;
                         case '*':
                             lexema.append(c);
-                            estado = 29;
+                            estado = 3;
                             break;
                         default:
                             retornaPonteiro();
                             return new Token(Tag.RELOP_DIV, "/", n_line, n_column);
                     }
                     break;
-                case 11:
+                case 4:
+                    if (c == '\n' || c == '\r' || lookahead == END_OF_FILE) {
+                        lexema.delete(0, lexema.length());
+                        estado = 0;
+                    } else {
+                        lexema.append(c);
+                    }
+                    break;
+                case 3:
+                    if (c == '*') {
+                        lexema.append(c);
+                        estado = 5;
+                    } else if (lookahead == END_OF_FILE) {
+                        retornaPonteiro();
+                        sinalizaErro("Comentário multilinha (/**/) não fechado antes do final do programa.");
+                        return null;
+                    } else {
+                        lexema.append(c);
+                    }
+                    break;
+                case 5:
+                    if (c == '/') {
+                        lexema.delete(0, lexema.length());
+                        estado = 0;
+                    } else if (lookahead == END_OF_FILE) {
+                        retornaPonteiro();
+                        sinalizaErro("Comentário multilinha (/**/) não fechado antes do final do programa.");
+                        return null;
+                    } else {
+                        lexema.append(c);
+                        estado = 3;
+                    }
+                    break;
+                case 13:
                     if (c == '-') {
                         return new Token(Tag.RELOP_ASSIGN, "<--", n_line, n_column);
                     } else {
                         retornaPonteiro();
-
+                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
+                                + " e coluna " + n_column + "\n quanto era esperado (-).");
+                        return null;
                     }
-                case 5:
+                case 8:
                     if (c == '=') {
                         return new Token(Tag.RELOP_LE, "<=", n_line, n_column);
                     } else if (c == '-') {
-                        retornaPonteiro();
+                        lexema.append(c);
                         estado = 11;
                         break;
                     } else if (c == '>') {
-                        retornaPonteiro();
                         return new Token(Tag.RELOP_LT, "<>", n_line, n_column);
                     } else {
                         retornaPonteiro();
                         return new Token(Tag.RELOP_LT, "<", n_line, n_column);
                     }
-                case 8:
+                case 17:
                     if (c == '=') {
                         return new Token(Tag.RELOP_GE, ">=", n_line, n_column);
                     } else {
@@ -234,8 +268,8 @@ public class LexerAluno {
                                 + " e coluna " + n_column);
                         return null;
                     }
-                case 16:
-                    if (Character.isLetterOrDigit(c) || c == '_') {
+                case 6:
+                    if (Character.isLetterOrDigit(c)) {
                         lexema.append(c);
                     } else {
                         retornaPonteiro();
@@ -297,39 +331,7 @@ public class LexerAluno {
                         lexema.append(c);
                     }
                     break;
-                case 28:
-                    if (c == '\n' || c == '\r' || lookahead == END_OF_FILE) {
-                        lexema.delete(0, lexema.length());
-                        estado = 0;
-                    } else {
-                        lexema.append(c);
-                    }
-                    break;
-                case 29:
-                    if (c == '*') {
-                        lexema.append(c);
-                        estado = 30;
-                    } else if (lookahead == END_OF_FILE) {
-                        retornaPonteiro();
-                        sinalizaErro("Comentário multilinha (/**/) não fechado antes do final do programa.");
-                        return null;
-                    } else {
-                        lexema.append(c);
-                    }
-                    break;
-                case 30:
-                    if (c == '/') {
-                        lexema.delete(0, lexema.length());
-                        estado = 0;
-                    } else if (lookahead == END_OF_FILE) {
-                        retornaPonteiro();
-                        sinalizaErro("Comentário multilinha (/**/) não fechado antes do final do programa.");
-                        return null;
-                    } else {
-                        lexema.append(c);
-                        estado = 29;
-                    }
-                    break;
+
             } // fim switch
         } // fim while
 //        return null;
@@ -337,7 +339,7 @@ public class LexerAluno {
 
 
     public static void main(String[] args) {
-        LexerAluno lexer = new LexerAluno("G:\\Projects\\GitHub\\Compilador\\parte1\\AnalizeLexica\\src\\lexer\\primeiro_portugolo.ptgl"); // parametro eh um programa em Javinha
+        LexerAluno lexer = new LexerAluno("G:\\Projects\\GitHub\\lexer\\src\\lexer\\primeiro_portugolo.ptgl"); // parametro eh um programa em Javinha
         Token token;
 
         // cria o objeto Tabela de Simbolos para inserir todas as palavras
