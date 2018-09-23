@@ -202,13 +202,15 @@ public class LexerAluno {
                         return new Token(Tag.RELOP_ASSIGN, "<--", n_line, n_column);
                     } else {
                         retornaPonteiro();
-
+                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
+                                + " e coluna " + n_column + "\n quanto era esperado (-).");
+                        return null;
                     }
                 case 5:
                     if (c == '=') {
                         return new Token(Tag.RELOP_LE, "<=", n_line, n_column);
                     } else if (c == '-') {
-                        retornaPonteiro();
+                        lexema.append(c);
                         estado = 11;
                         break;
                     } else if (c == '>') {

@@ -2,7 +2,7 @@ algoritmo
 	declare 
 	op literal;
 	
-	escreva("Vc prefere Goku ou Vegeta? Informe G ou V: ");
+	escreva ("Vc prefere Goku ou Vegeta? Informe G ou V: ");
 	leia(op);
 	se(op = "G") inicio 
 	   escreva("Oi, eu sou o Goku!");
