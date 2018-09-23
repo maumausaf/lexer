@@ -27,8 +27,7 @@ public enum Tag {
     ID,
     
     //numeros
-    INTEGER,
-    DOUBLE,
+    NUMERICO,
     
     //strings
     STRING,

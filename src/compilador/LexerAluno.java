@@ -232,7 +232,7 @@ public class LexerAluno {
                         estado = 20;
                     } else {
                         retornaPonteiro();
-                        return new Token(Tag.INTEGER, lexema.toString(), n_line, n_column);
+                        return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
                     }
                     break;
                 case 20:
@@ -251,13 +251,13 @@ public class LexerAluno {
                     } else if (c == ',') {
                         estado = 22;
                     } else {
-                        return new Token(Tag.DOUBLE, lexema.toString(), n_line, n_column);
+                        return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
                     }
                 case 22:
                     if (Character.isDigit(c)) {
                         lexema.append(c);
                     } else {
-                        return new Token(Tag.DOUBLE, lexema.toString(), n_line, n_column);
+                        return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
                     }
                 case 23:
                     if (c == '"') {
@@ -323,7 +323,7 @@ public class LexerAluno {
     
 
    public static void main(String[] args) {
-        LexerAluno lexer = new LexerAluno("C:\\Users\\HOME\\Documents\\NetBeansProjects\\lexer_1\\src\\lexer\\HelloJavinha.jvn"); // parametro eh um programa em Javinha
+        LexerAluno lexer = new LexerAluno("C:\\Users\\HOME\\Documents\\NetBeansProjects\\lexer\\src\\compilador\\HelloJavinha.jvn"); // parametro eh um programa em Javinha
         Token token;
 
         // cria o objeto Tabela de Simbolos para inserir todas as palavras

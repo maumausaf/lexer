@@ -1,9 +1,18 @@
-public class HelloJavinha
-	integer data_entrega; 
-	string msgm;
+algoritmo 
+
+inicio
+
+    subrotina 
+    
+    
+        
+	numerico data_entrega; 
+	literal msgm;
 
 	data_entrega = 29 * 11 * 17;
 	msgm = "Bom trabalho!";
 
-	SystemOutDispln("Caros alunos, O TP ja esta disponivel.");
-end
+	escreva("Caros alunos, O TP ja esta disponivel.");
+
+    fim subrotina
+fim
