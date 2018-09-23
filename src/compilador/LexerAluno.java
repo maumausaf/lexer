@@ -116,7 +116,7 @@ public class LexerAluno {
 
                         return new Token(Tag.EOF, "EOF", n_line, n_column);
 
-                    } else if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+                    } else if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {//ok
                         if (c == '\t') {
                             n_column = +4;
                         } else if (c == '\n' || c == '\r') {
@@ -124,33 +124,35 @@ public class LexerAluno {
                             n_column = 1;
                         }
                     } else if (c == '+') {
-                        return new Token(Tag.RELOP_PLUS, "+", n_line, n_column);
+                        return new Token(Tag.RELOP_PLUS, "+", n_line, n_column);//ok
                     } else if (c == '=') {
                         lexema.append(c);
-                        estado = 11;
-                    } else if (c == '<') {
+                        return new Token(Tag.RELOP_ASSIGN, "=", n_line, n_column);//ok
+                    } else if (c == '<') {//ok
                         lexema.append(c);
                         estado = 5;
-                    } else if (c == '>') {
+                    } else if (c == '>') {//ok
                         lexema.append(c);
                         estado = 8;
                     } else if (c == '-') {
-                        return new Token(Tag.RELOP_MINUS, "-", n_line, n_column);
+                        return new Token(Tag.RELOP_MINUS, "-", n_line, n_column);//ok
                     } else if (c == '*') {
                         lexema.append(c);
-                        return new Token(Tag.RELOP_MULT, "*", n_line, n_column);
+                        return new Token(Tag.RELOP_MULT, "*", n_line, n_column);//ok
                     } else if (c == '/') {
                         lexema.append(c);
                         estado = 4;
+                    } else if (c == ':') {
+                        return new Token(Tag.SMB_SEMICOLON, ":", n_line, n_column);//ok
                     } else if (c == ';') {
-                        return new Token(Tag.SMB_SEMICOLON, ";", n_line, n_column);
+                        return new Token(Tag.SMB_SEMICOLON, ";", n_line, n_column);//ok
                     } else if (c == '(') {
-                        return new Token(Tag.SMB_OP, "(", n_line, n_column);
+                        return new Token(Tag.SMB_OP, "(", n_line, n_column);//ok
                     } else if (c == ')') {
-                        return new Token(Tag.SMB_CP, ")", n_line, n_column);
+                        return new Token(Tag.SMB_CP, ")", n_line, n_column);//ok
                     } else if (Character.isLetter(c)) {
                         lexema.append(c);
-                        estado = 16;
+                        estado = 16; // ok
                     } else if (Character.isDigit(c)) {
                         lexema.append(c); // comecamos a construir um numero
                         estado = 18; // vamos para o estado 18
@@ -183,16 +185,24 @@ public class LexerAluno {
             }
                     break;
                 case 11:
-                    if (c == '=') {
-                        return new Token(Tag.RELOP_EQ, "==", n_line, n_column);
+                    if (c == '-') {
+                        return new Token(Tag.RELOP_LT, "<--", n_line, n_column);
                     } else {
                         retornaPonteiro();
-                        return new Token(Tag.RELOP_ASSIGN, "=", n_line, n_column);
+                        
                     }
                 case 5:
                     if (c == '=') {
                         return new Token(Tag.RELOP_LE, "<=", n_line, n_column);
-                    } else {
+                    }else if (c == '-'){
+                        retornaPonteiro();
+                        estado = 11;
+                        break;                        
+                    }else if (c == '>'){
+                        retornaPonteiro();
+                        return new Token(Tag.RELOP_LT, "<>", n_line, n_column);
+                    }
+                    else {
                         retornaPonteiro();
                         return new Token(Tag.RELOP_LT, "<", n_line, n_column);
                     }
@@ -269,7 +279,7 @@ public class LexerAluno {
                         return null;
                     } else if (lookahead == END_OF_FILE) {
 
-                        sinalizaErro("String deve ser fechada com \" antes do fim de arquivo");
+                        sinalizaErro("Literal deve ser fechado com \" antes do fim de arquivo");
                         return null;
                     } else { // Se vier outro, permanece no estado 23
                         lexema.append(c);

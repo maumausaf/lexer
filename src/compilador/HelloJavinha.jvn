@@ -4,12 +4,10 @@ inicio
 
     subrotina 
     
-    
-        
 	numerico data_entrega; 
 	literal msgm;
 
-	data_entrega = 29 * 11 * 17;
+	data_entrega <-- 29 * 11 * 17;
 	msgm = "Bom trabalho!";
 
 	escreva("Caros alunos, O TP ja esta disponivel.");
