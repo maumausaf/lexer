@@ -1,4 +1,7 @@
-algoritmo 
+algoritmo
+
+
+    declare
 	declare 
 	op literal;
 	
@@ -17,4 +20,8 @@ subrotina fazNada(v1 nulo)
 fim subrotina
 
 
-2.123
+2.declare  23
+
+<--
+<-declare
+""

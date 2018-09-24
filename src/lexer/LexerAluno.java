@@ -9,6 +9,7 @@ public class LexerAluno {
     private static int lookahead = 0; // armazena o último caractere lido do arquivo
     public static int n_line = 1; // contador de linhas
     public static int n_column = 1; // contador de colunas
+    public static int n_errors = 0;
     private RandomAccessFile instance_file; // referencia para o arquivo
     private static TS tabelaSimbolos; // tabela de simbolos
 
@@ -172,10 +173,12 @@ public class LexerAluno {
                         lexema.append(c);
                         estado = 14;
                     } else {
-                        retornaPonteiro();
-                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
-                                + " e coluna " + n_column);
-                        return null;
+                            sinalizaErro("Não foi possível reconhecer o símbolo "+ c +
+                                    " na linha " + n_line +  " e coluna " + n_column + " o token será ignorado");
+                            lexema.delete(0, lexema.length());
+                            n_errors=0;
+                            estado = 0;
+
                     }
                     break;
 
@@ -249,7 +252,7 @@ public class LexerAluno {
                         return new Token(Tag.RELOP_LE, "<=", n_line, n_column);
                     } else if (c == '-') {
                         lexema.append(c);
-                        estado = 11;
+                        estado = 13;
                         break;
                     } else if (c == '>') {
                         return new Token(Tag.RELOP_LT, "<>", n_line, n_column);
@@ -262,26 +265,74 @@ public class LexerAluno {
                     if (c == '-') {
                         return new Token(Tag.RELOP_ASSIGN, "<--", n_line, n_column);
                     } else {
-                        retornaPonteiro();
-                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
-                                + " e coluna " + n_column + "\n quanto era esperado (-).");
-                        return null;
+                        n_errors++;
+                        sinalizaErro("Lexema " + lexema + " invalido na linha " + n_line
+                                + " e coluna " + n_column + " era esperado \" <-- \"");
+                        if (n_errors<1){
+                            lexema.delete(lexema.length()-1, 1);
+                            estado = 0;
+                            retornaPonteiro();
+                        }else {
+                            sinalizaErro("Não foi possível corrigir o erro léxico," +
+                                    " da linha " + n_line +  " e coluna " + n_column + " o token será ignorado");
+                            lexema.delete(0, lexema.length());
+                            retornaPonteiro();
+                            n_errors=0;
+                            estado = 0;
+                        }
                     }
+                    break;
 
                 case 14:
                     if (c == '"') {
-                        return new Token(Tag.LITERAL, lexema.toString(), n_line, n_column);
-                    } else if (c == '\n' || c == '\r') {
                         retornaPonteiro();
-                        sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
-                                + " e coluna " + n_column);
-                        return null;
-                    } else if (lookahead == END_OF_FILE) {
 
-                        sinalizaErro("Literal deve ser fechado com \" antes do fim de arquivo");
-                        return null;
-                    } else { // Se vier outro, permanece no estado 23
+                        sinalizaErro("Literal vazio identificado na linha " + n_line
+                                + " e coluna " + n_column + ", os caracteres subsequentes montarão o novo Literal");
+                        lexema.delete(lexema.length()-1, 1);
+                        estado = 0;
+
+                    } else if (c == '\n' || c == '\r') {
+
+
+                        sinalizaErro("Literal "+ lexema +"não fechado na linha " + n_line
+                                + " e coluna " + n_column + ", o token não será formado");
+                        lexema.delete(0, lexema.length());
+                        estado = 0;
+
+                    } else if (lookahead == END_OF_FILE) {
+                        //retornaPonteiro();
+
+                        sinalizaErro("Literal "+ lexema +"não fechado antes do final do arquivo na linha " + n_line
+                                + " e coluna " + n_column + ", o token não será formado");
+                        lexema.delete(0, lexema.length());
+
+                        estado = 15;
+                    } else {
                         lexema.append(c);
+                        estado =15;
+                    }
+                    break;
+                case 15:
+                    if (c == '"') {
+                       return new Token(Tag.LITERAL, lexema.toString(), n_line,n_column) ;
+                    } else if (c == '\n' || c == '\r') {
+                        sinalizaErro("Literal "+ lexema +"não fechado na linha " + n_line
+                                + " e coluna " + n_column + ", o token não será formado");
+                        lexema.delete(0, lexema.length());
+                        estado = 0;
+                        retornaPonteiro();
+
+                    } else if (lookahead == END_OF_FILE) {
+                        retornaPonteiro();
+
+                        sinalizaErro("Literal "+ lexema +" não fechado antes do final do arquivo na linha " + n_line
+                                + " e coluna " + n_column + ", o token não será formado");
+                        lexema.delete(lexema.length(), 0);
+                        estado = 0;
+                    } else { // Se vier outro, permanece no estado
+                        lexema.append(c);
+
                     }
                     break;
 
@@ -292,6 +343,7 @@ public class LexerAluno {
                         retornaPonteiro();
                         return new Token(Tag.RELOP_GT, ">", n_line, n_column);
                     }
+
 
                 case 20:
                     if (Character.isDigit(c)) {
@@ -310,10 +362,18 @@ public class LexerAluno {
                         lexema.append(c);
                         estado = 23; // movimento para o estado 21
                     } else {
-                        retornaPonteiro();
+                        n_errors++;
                         sinalizaErro("Simbolo " + c + " invalido na linha " + n_line
-                                + " e coluna " + n_column);
-                        return null;
+                                + " e coluna " + n_column + " era esperado um numeral");
+                        if (n_errors<1){
+                            lexema.delete(lexema.length()-1, 1);
+                            estado = 0;
+                        }else {
+                            lexema.delete(lexema.length()-1, 2);
+                            retornaPonteiro();
+                            n_errors=0;
+                            return new Token(Tag.NUMERICO, lexema.toString(), n_line, n_column);
+                        }
                     }
                     break;
 
