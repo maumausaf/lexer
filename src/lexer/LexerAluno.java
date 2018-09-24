@@ -88,6 +88,7 @@ public class LexerAluno {
 
         // armazena o char corrente
         char c;
+        char character;
 
         // sai desse loop somente qndo retornar um token
         while (true) {
@@ -98,6 +99,7 @@ public class LexerAluno {
                 lookahead = instance_file.read();
 
                 if (lookahead != END_OF_FILE) {
+                    //c= Character.toLowerCase((char) lookahead);
                     c = (char) lookahead;
                     n_column++;
 
@@ -167,10 +169,10 @@ public class LexerAluno {
                         lexema.append(c);
                         estado = 6; // ok
                     } else if (Character.isDigit(c)) {
-                        lexema.append(c); // comecamos a construir um numero
-                        estado = 20; // vamos para o estado 18
+                        lexema.append(c); //
+                        estado = 20; //
                     } else if (c == '"') {
-                        lexema.append(c);
+                        //lexema.append(c);
                         estado = 14;
                     } else {
                             sinalizaErro("Não foi possível reconhecer o símbolo "+ c +
@@ -284,40 +286,44 @@ public class LexerAluno {
                     break;
 
                 case 14:
-                    if (c == '"') {
-                        retornaPonteiro();
+                    if (c == '"' && lookahead != '"') {
+                        lexema.append(c);
+                        //estado = 15;
+                    }
+                    else if(c =='"' && lexema.length()==1){
 
                         sinalizaErro("Literal vazio identificado na linha " + n_line
                                 + " e coluna " + n_column + ", os caracteres subsequentes montarão o novo Literal");
                         lexema.delete(lexema.length()-1, 1);
-                        estado = 0;
+                        estado = 15;
 
                     } else if (c == '\n' || c == '\r') {
-
-
                         sinalizaErro("Literal "+ lexema +"não fechado na linha " + n_line
                                 + " e coluna " + n_column + ", o token não será formado");
                         lexema.delete(0, lexema.length());
                         estado = 0;
 
                     } else if (lookahead == END_OF_FILE) {
-                        //retornaPonteiro();
-
-                        sinalizaErro("Literal "+ lexema +"não fechado antes do final do arquivo na linha " + n_line
+                        sinalizaErro("Literal \""+ lexema +" não fechado antes do final do arquivo na linha " + n_line
                                 + " e coluna " + n_column + ", o token não será formado");
                         lexema.delete(0, lexema.length());
 
-                        estado = 15;
+                        estado = 0;
                     } else {
                         lexema.append(c);
-                        estado =15;
+                        estado = 15;
                     }
                     break;
                 case 15:
-                    if (c == '"') {
+                    if (c == '"' && lexema.length()>2) {
                        return new Token(Tag.LITERAL, lexema.toString(), n_line,n_column) ;
-                    } else if (c == '\n' || c == '\r') {
-                        sinalizaErro("Literal "+ lexema +"não fechado na linha " + n_line
+                    } else if (c=='"' && lexema.length()<=2){
+                        sinalizaErro("Literal vazio identificado na linha " + n_line
+                                + " e coluna " + n_column + ", os caracteres subsequentes montarão o novo Literal");
+                        lexema.delete(lexema.length()-1, 1);
+                        lexema.append(c);
+                    }else if (c == '\n' || c == '\r') {
+                        sinalizaErro("Literal "+ lexema +" não fechado na linha " + n_line
                                 + " e coluna " + n_column + ", o token não será formado");
                         lexema.delete(0, lexema.length());
                         estado = 0;

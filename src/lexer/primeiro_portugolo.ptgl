@@ -21,7 +21,10 @@ fim subrotina
 
 
 2.declare  23
-
+DECLARE
+!
 <--
-<-declare
+<-Declare
 ""
+
+""declare se(op = "G"

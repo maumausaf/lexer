@@ -96,7 +96,7 @@ public class TS {
     // vamos usar esse metodo somente para diferenciar ID e KW
     public Token retornaToken(String lexema) {
         for (Token token : tabelaSimbolos.keySet()) {
-            if (token.getLexema().equals(lexema)) {
+            if (token.getLexema().equals(lexema.toLowerCase())) {
                 return token;
             }
         }
